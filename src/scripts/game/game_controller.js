@@ -6,21 +6,31 @@ angular.module('app.game')
         var GlobalGame={};
         GlobalGame.States={};
         GlobalGame.Prefabs={};
+        GlobalGame.Groups={};
+
+
 
         //--------------------Unit-------------------------
-        GlobalGame.Prefabs.Unit=function(game,id,x,y,targets)
+        GlobalGame.Prefabs.Unit=function(game,id,x,y,targets,key)
         {
             this.HP=100;
             this.minDistance=10;
             this.Speed=10;
             this.Id=id;
-            Phaser.Sprite.call(this, game, x, y,'king');
-            game.add.sprite(x, y, 'king');
-            this.anchor.setTo(0.5);
-            this.scale.setTo(0.5, 0.5);
-            this.alpha = 0.8;
+            Phaser.Sprite.call(this, game, x, y,'king'); //don't work((((((((
+            game.physics.arcade.enableBody(this);
+            //this.sprite= game.add.sprite(x, y, 'king');
             this.x = x;
             this.y = y;
+
+            this.anchor.setTo(0.5, 0.5);
+            this.alpha = 0.8;
+            this.checkWorldBounds = true;
+            this.outOfBoundsKill = true;
+            //game.add.sprite(x, y, 'king');
+            //this.scale.setTo(0.5, 0.5);
+            //this.alpha = 0.8;
+
 
 
         };
@@ -28,7 +38,12 @@ angular.module('app.game')
         GlobalGame.Prefabs.Unit.constructor = GlobalGame.Prefabs.Unit;
         GlobalGame.Prefabs.Unit.prototype.update=function()
         {
-            this.x+=0.1;
+            this.updateUnit();
+        };
+        GlobalGame.Prefabs.Unit.prototype.updateUnit=function()
+        {
+            this.body.x+=0.1;
+            //this.sprite.x+=this.body.x;
         };
         //---------------------------------------------
 
@@ -155,19 +170,18 @@ angular.module('app.game')
             },
             create: function () {
                 console.log('create');
+
+                // GAme background
+                this.background = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'game_background');
+                //-------Global variables
                 this.Variables= GlobalGame.States.GameState.Variables;
+                GlobalGame.Groups.UnitGroup= game.add.group();
+                GlobalGame.Groups.UnitGroup.enableBody = true;
 
 
 
-                // Menu background
-                game.background = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'game_background');
-
-                game.background.tilePosition.x = 0;
-                game.background.tilePosition.y = 0;
 
 
-                var targets={}
-                var hero= new GlobalGame.Prefabs.Unit(game ,1 , 100 , 100,targets);
 
 
 
@@ -186,6 +200,18 @@ angular.module('app.game')
                         align: "center",
                         fill: "#f13"
                     });
+
+
+
+
+
+                var targets={}
+                var hero= new GlobalGame.Prefabs.Unit(game ,1 , 10 , 10,targets,'king');
+                game.add.existing(hero);
+                GlobalGame.Groups.UnitGroup.add(hero);
+            },
+            update:function(){
+                game.world.sendToBack(this.background);
 
             }
 
