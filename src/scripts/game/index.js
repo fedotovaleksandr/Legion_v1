@@ -4,12 +4,12 @@ angular.module('app.game', ['ui.router'])
             .state('game', {
                 url: '/game',
                 abstract: true,
-                templateUrl: 'scripts/game/template.html'
+                templateUrl: 'src/scripts/game/template.html'
 
             })
             .state('game.play', {
                 url: '',
-                templateUrl: 'scripts/game/main.html',
+                templateUrl: 'src/scripts/game/main.html',
                 controller: 'GameController'
 
 

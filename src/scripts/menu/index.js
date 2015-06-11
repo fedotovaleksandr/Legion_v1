@@ -5,12 +5,12 @@ angular.module('app.menu', [
         $stateProvider
             .state('menu', {
                 abstract: true,
-                templateUrl: 'scripts/menu/template.html',
+                templateUrl: 'src/scripts/menu/template.html',
                 url: '/menu'
             })
             .state('menu.home', {
                 url: '',
-                templateUrl: 'scripts/menu/main.html',
+                templateUrl: 'src/scripts/menu/main.html',
                 controller: 'MenuController as ctrl'
 
             })
