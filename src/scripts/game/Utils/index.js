@@ -5,4 +5,5 @@ var Utils = {};
     require('./extend')(Utils);
     require('./instanceof')(Utils);
     require('./vector')(Utils);
+    require('./WatchEvents')(Utils);
 module.exports = Utils;

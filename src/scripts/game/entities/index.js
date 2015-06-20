@@ -3,5 +3,9 @@
  */
 module.exports = (function(GlobalGame) {
     var Utils = require('../Utils');
+    Utils.Watcheventconfigurate();
+
+    require('./FactoryofFactories.js')(GlobalGame,Utils);
     require('./unit')(GlobalGame,Utils);
+
 });

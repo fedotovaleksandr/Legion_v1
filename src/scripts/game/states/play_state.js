@@ -16,7 +16,9 @@ module.exports = (function(GlobalGame) {
         preload: function () {
             game.load.image('game_background', 'src/assets/game/game_background.png');
             game.load.image('king', 'src/assets/game/king.png');
+            game.load.image('king', 'src/assets/game/king.png');
             game.load.audio('dink', 'src/assets/game/Click.mp3');
+
         },
         create: function () {
             console.log('create');
@@ -57,11 +59,17 @@ module.exports = (function(GlobalGame) {
 
             var targets={}
             var hero= new GlobalGame.Prefabs.Unit(game ,1 , 10 , 10,targets,'king');
-            game.add.existing(hero);
-            GlobalGame.Groups.UnitGroup.add(hero);
+
+           // game.add.existing(hero);
+           // GlobalGame.Groups.UnitGroup.add(hero);
+
+            //Factories
+            GlobalGame.FactoryofFactories=new GlobalGame.FactoryofFactories();
+            GlobalGame.FactoryofFactories.CreateUnitFactory("Player1",40,40);
+            GlobalGame.FactoryofFactories.AddUnits();
         },
         update:function(){
-            game.world.sendToBack(this.background);
+            GlobalGame.FactoryofFactories.UpdateFactories();
 
         }
 

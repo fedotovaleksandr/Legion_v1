@@ -6,6 +6,8 @@ var GlobalGame={
     States: {},
     Prefabs: {},
     Groups: {},
+    FactoryofFactories:{},
+    Factories:{},
     game :  new Phaser.Game(800,800, Phaser.AUTO, 'gameCanvas')
     };
 

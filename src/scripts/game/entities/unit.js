@@ -4,10 +4,17 @@
 module.exports = (function(GlobalGame,Utils) {
     //--------------------Unit-------------------------
     var game = GlobalGame.game;
-    GlobalGame.Prefabs.Unit = function (game, id, x, y, targets, key) {
+    GlobalGame.Prefabs.Unit = function (id, x, y, targets, key) {
         this.Id = id;//id maybe helpfull
+        Phaser.Sprite.call(this, game, x, y, this.GetNameofSprite());//call sprite
 
-        this.Hp = 100;//HP
+        this.maxHp=100;
+        //this.Hp={};//HP
+        //this.watch("Hp",this.ChangeHp);//Event on change
+        this.Hp=100;//HP
+
+
+        this.graphics2 = game.add.graphics(0, 0);
 
         this.Mindistance = 10;//min distance for attack
 
@@ -29,7 +36,7 @@ module.exports = (function(GlobalGame,Utils) {
 
         this.Vector= new Utils.Vector(0,0);//add vector
 
-        Phaser.Sprite.call(this, game, this.X, this.Y, this.Nameofsprite());
+
 
         this.anchor.setTo(0.5, 0.5);
         this.alpha = 0.8;//порядок по оси Z
@@ -47,22 +54,52 @@ module.exports = (function(GlobalGame,Utils) {
     GlobalGame.Prefabs.Unit.prototype = Object.create(Phaser.Sprite.prototype);
     GlobalGame.Prefabs.Unit.constructor = GlobalGame.Prefabs.Unit;
     GlobalGame.Prefabs.Unit.prototype.update = function () {
-        this.Updateunitvector();
-        this.Updateunitposition();
+        this.UpdateUnitVector();
+        this.UpdateUnitPosition();
+        this.UpdatePropertyPosition();
+        this.Hp=this.Hp - 0.1//for test
     };
+    //events
+    GlobalGame.Prefabs.Unit.prototype.Events={}
 
-    GlobalGame.Prefabs.Unit.prototype.Nameofsprite = function()
+
+    //events method
+    GlobalGame.Prefabs.Unit.prototype.GetNameofSprite = function()
     {
        return 'king' ;
     };
-    GlobalGame.Prefabs.Unit.prototype.Updateunitvector = function () {
+    GlobalGame.Prefabs.Unit.prototype.ChangeHp = function(id, oldval, newval)//event on change hp
+    {
+
+    };
+
+
+    GlobalGame.Prefabs.Unit.prototype.UpdateUnitVector = function () {
         this.Vector.x+=0.001;
         this.Vector.y+=0.001;
 
     };
-    GlobalGame.Prefabs.Unit.prototype.Updateunitposition = function () {
+    GlobalGame.Prefabs.Unit.prototype.UpdateUnitPosition = function () {
         this.body.x += this.Vector.x;
         this.body.y +=  this.Vector.y;
+
+    };
+    GlobalGame.Prefabs.Unit.prototype.UpdatePropertyPosition = function () {
+        if (this.Hp>0)
+        {
+            this.graphics2.clear();
+            this.graphics2.lineStyle(2, 0xffffff);
+            this.graphics2.beginFill(0xa000f3);
+            this.graphics2.drawRect(this.body.x, this.body.y - 10, 40 * this.Hp / this.maxHp, 5);
+            this.graphics2.endFill();
+        }
+        else
+        {
+            this.graphics2.clear();
+        }
+
+
+
 
     };
     GlobalGame.Prefabs.Unit.prototype.Die = function (autokill) {
