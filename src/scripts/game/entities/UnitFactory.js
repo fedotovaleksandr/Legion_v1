@@ -10,10 +10,10 @@ module.exports = (function(GlobalGame,Utils) {
         this.Y=y;
         this.CooldownWave= 5000;
         this.LastWaveTime=new Date();
-        this.CooldownUnit= 50;
+        this.CooldownUnit= 1000;
         this.LastUnitTime=this.LastWaveTime;
-        this.Targets=[];
-        this.Units=[];
+        this.Targets=GlobalGame.game.add.group();
+        this.Units=GlobalGame.game.add.group();
         this.ListofNewUnits=[];
 
     };
@@ -63,19 +63,19 @@ module.exports = (function(GlobalGame,Utils) {
         return this.Targets;
 
     };
-    GlobalGame.Factories.UnitFactory.prototype.setTargets= function(targets)
+    GlobalGame.Factories.UnitFactory.prototype.addTargets= function(targets)
     {
-        return this.Targets = targets;
+        this.Targets=targets;
 
     };
-    GlobalGame.Factories.UnitFactory.prototype.SpawnUnit= function(targets)
+    GlobalGame.Factories.UnitFactory.prototype.SpawnUnit= function()
     {
         var len = this.Units.length;
         var Unit =this.ListofNewUnits.pop();
 
         New_unit = new Unit.Constructor(len,this.X,this.Y,this.getTargets(),Unit.Key);
-        this.Units.push(New_unit);
-        GlobalGame.game.add.existing(New_unit);
+        this.Units.add(New_unit);
+        //GlobalGame.game.add.existing(New_unit);
 
 
     };

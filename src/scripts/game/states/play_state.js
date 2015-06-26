@@ -16,7 +16,7 @@ module.exports = (function(GlobalGame) {
         preload: function () {
             game.load.image('game_background', 'src/assets/game/game_background.png');
             game.load.image('king', 'src/assets/game/king.png');
-            game.load.image('king', 'src/assets/game/king.png');
+            game.load.spritesheet('soldier', 'src/assets/game/swordsmansmall.png', 50, 80,18);
             game.load.audio('dink', 'src/assets/game/Click.mp3');
 
         },
@@ -57,8 +57,8 @@ module.exports = (function(GlobalGame) {
 
 
 
-            var targets={}
-            var hero= new GlobalGame.Prefabs.Unit(game ,1 , 10 , 10,targets,'king');
+
+           // var hero= new GlobalGame.Prefabs.Unit(game ,1 , 10 , 10,targets,'king');
 
            // game.add.existing(hero);
            // GlobalGame.Groups.UnitGroup.add(hero);
@@ -66,7 +66,9 @@ module.exports = (function(GlobalGame) {
             //Factories
             GlobalGame.FactoryofFactories=new GlobalGame.FactoryofFactories();
             GlobalGame.FactoryofFactories.CreateUnitFactory("Player1",40,40);
+            GlobalGame.FactoryofFactories.CreateUnitFactory("Player2",400,400);
             GlobalGame.FactoryofFactories.AddUnits();
+            GlobalGame.FactoryofFactories.SetOpponent("Player1","Player2");
         },
         update:function(){
             GlobalGame.FactoryofFactories.UpdateFactories();

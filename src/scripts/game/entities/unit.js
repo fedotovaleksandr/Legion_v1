@@ -14,15 +14,21 @@ module.exports = (function(GlobalGame,Utils) {
         this.Hp=100;//HP
 
 
-        this.graphics2 = game.add.graphics(0, 0);
+        this.graphics2 = game.add.graphics(0, 0);//hp line
 
-        this.Mindistance = 10;//min distance for attack
+        this.State="idle";//state for animation
+
+        this.Mindistance = 50;//min distance for attack
 
         this.Targets = targets;//targets
 
-        this.Speed = 10;//movented speed
+        this.CurrentTarget=undefined;//currenttarget
 
-        this.Realoadtime=100//ml sec - reload time
+        this.Speed = 1;//movented speed
+
+        this.ReloadTime=500//ml sec - reload time
+
+        this.LastAttackTime=new Date();
 
         this.Damage=10;//damage that take this unit
 
@@ -55,33 +61,112 @@ module.exports = (function(GlobalGame,Utils) {
     GlobalGame.Prefabs.Unit.constructor = GlobalGame.Prefabs.Unit;
     GlobalGame.Prefabs.Unit.prototype.update = function () {
         this.UpdateUnitVector();
+
         this.UpdateUnitPosition();
+
         this.UpdatePropertyPosition();
-        this.Hp=this.Hp - 0.1//for test
+
+
     };
     //events
-    GlobalGame.Prefabs.Unit.prototype.Events={}
+    //GlobalGame.Prefabs.Unit.prototype.Events={}
 
 
     //events method
     GlobalGame.Prefabs.Unit.prototype.GetNameofSprite = function()
     {
-       return 'king' ;
+        return 'soldier' ;
     };
-    GlobalGame.Prefabs.Unit.prototype.ChangeHp = function(id, oldval, newval)//event on change hp
+    GlobalGame.Prefabs.Unit.prototype.SetAnimation = function()
     {
-
+        this.AnimationData={};
+        this.AnimationData.FrameHeight=160;
+        this.AnimationData.FrameWidth=100;
+        this.animations.add('idle', [0, 1, 2]);
+        this.animations.add('attack', [0, 1, 2]);
+        this.animations.add('move', [0, 1, 2]);
+        this.animations.add('die', [0, 1, 2]);
     };
 
+    GlobalGame.Prefabs.Unit.prototype.GetIncomeDamage = function(Hpalfa)
+    {
+        this.Hp-=Hpalfa;
+        if (this.Hp <= 0)
+        {
+            this.Die();
+        }
+    };
 
     GlobalGame.Prefabs.Unit.prototype.UpdateUnitVector = function () {
-        this.Vector.x+=0.001;
-        this.Vector.y+=0.001;
+        if (this.CurrentTarget=== undefined || this.CurrentTarget.Dead===true)
+        {
+            this.CurrentTarget=this.GetNewCurrentTarget();
+        }
+
+
+        if (this.CurrentTarget=== undefined)
+        {
+            this.Vector.x=0;
+            this.Vector.y=0;
+            this.State="idle"
+            return;
+        }else
+        {
+            if (game.physics.arcade.distanceBetween(this, this.CurrentTarget) <= this.Mindistance)
+            {
+                this.Vector.x=0;
+                this.Vector.y=0;
+                this.State="attack"
+                return;
+            }
+
+            this.State="move"
+            var newvector = new Utils.Vector(this.CurrentTarget.X-this.X,this.CurrentTarget.Y-this.Y);
+            var normvector= newvector.clone().normalize();
+            normvector.x=normvector.x*this.Speed;
+            normvector.y=normvector.y*this.Speed;
+            this.Vector=normvector;
+        }
+
+
+
+
+    };
+    GlobalGame.Prefabs.Unit.prototype.GetNewCurrentTarget = function () {
+        var mindistance=10000;
+        var selectterget=undefined;
+        this.Targets.forEach(function(child)
+        {
+            if ((child!== undefined) &&( child!== null )&& (child.Dead===false)) {
+                var newmin = game.physics.arcade.distanceBetween(this, child);
+                if (newmin < mindistance) {
+                    selectterget = child;
+                    mindistance = newmin;
+                }
+            }
+
+        },this,true);
+        return selectterget;
 
     };
     GlobalGame.Prefabs.Unit.prototype.UpdateUnitPosition = function () {
         this.body.x += this.Vector.x;
         this.body.y +=  this.Vector.y;
+        this.X=this.body.x;
+        this.Y=this.body.y;
+         if (this.State==="attack")
+         {
+             this.Attack();
+         }
+
+
+    };
+    GlobalGame.Prefabs.Unit.prototype.Attack = function () {
+    if (this.LastAttackTime.getTime() + this.ReloadTime < (new Date()).getTime())
+    {
+        this.CurrentTarget.GetIncomeDamage(this.Damage);
+        this.LastAttackTime=new Date();
+    }
 
     };
     GlobalGame.Prefabs.Unit.prototype.UpdatePropertyPosition = function () {
@@ -103,9 +188,11 @@ module.exports = (function(GlobalGame,Utils) {
 
     };
     GlobalGame.Prefabs.Unit.prototype.Die = function (autokill) {
-        if(!this.dead){
-            this.dead = true;
+
+            this.Dead = true;
             this.alpha = 0;
+            this.State="die"
+            this.destroy(true);
 
             // Explosion
             /*if(!autoKill){
@@ -122,7 +209,7 @@ module.exports = (function(GlobalGame,Utils) {
 
             // Update parent group
             //this.parent.updateStatus(this, autoKill);
-        }
+
 
     };
     //---------------------------------------------
