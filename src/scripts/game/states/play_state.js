@@ -16,7 +16,8 @@ module.exports = (function(GlobalGame) {
         preload: function () {
             game.load.image('game_background', 'src/assets/game/game_background.png');
             game.load.image('king', 'src/assets/game/king.png');
-            game.load.spritesheet('soldier', 'src/assets/game/swordsmansmall.png', 50, 80,18);
+            game.load.spritesheet('soldier_sprite', 'src/assets/game/swordsmansmall.png', 50, 78,18);
+            game.load.spritesheet('portal_sprite', 'src/assets/game/portal_sprite.png');
             game.load.audio('dink', 'src/assets/game/Click.mp3');
 
         },
@@ -63,10 +64,11 @@ module.exports = (function(GlobalGame) {
            // game.add.existing(hero);
            // GlobalGame.Groups.UnitGroup.add(hero);
 
-            //Factories
+            //Factories#
             GlobalGame.FactoryofFactories=new GlobalGame.FactoryofFactories();
-            GlobalGame.FactoryofFactories.CreateUnitFactory("Player1",40,40);
-            GlobalGame.FactoryofFactories.CreateUnitFactory("Player2",400,400);
+            GlobalGame.FactoryofFactories.CreatePortal(40,40,GlobalGame.FactoryofFactories.CreateGetUnitFactory("Player1"));
+            GlobalGame.FactoryofFactories.CreatePortal(400,400,GlobalGame.FactoryofFactories.CreateGetUnitFactory("Player2"));
+
             GlobalGame.FactoryofFactories.AddUnits();
             GlobalGame.FactoryofFactories.SetOpponent("Player1","Player2");
         },

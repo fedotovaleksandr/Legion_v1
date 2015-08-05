@@ -2,32 +2,34 @@
  * Created by aleksandr on 17.06.2015.
  */
 module.exports = (function(GlobalGame,Utils) {
-    GlobalGame.Factories.UnitFactory=function(id,name,x,y)
+    require('./unit')(GlobalGame,Utils);
+    require('./Portal')(GlobalGame,Utils);
+    GlobalGame.Factories.UnitFactory=function(id,name)
     {
         this.Id= id;
         this.Name=name;
-        this.X=x;
-        this.Y=y;
-        this.CooldownWave= 5000;
-        this.LastWaveTime=new Date();
-        this.CooldownUnit= 1000;
-        this.LastUnitTime=this.LastWaveTime;
+
+
         this.Targets=GlobalGame.game.add.group();
         this.Units=GlobalGame.game.add.group();
         this.ListofNewUnits=[];
 
-    };
-    GlobalGame.Factories.UnitFactory.prototype.UnitsEnumConstructor=//delete
-        {
-            Unit : function()
-            {
-                this.Name ="Unit" ;
-                this.Constructor = GlobalGame.Prefabs.Unit;
-                this.Key = 1;
 
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '0x';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
             }
+            return color;
         }
-    GlobalGame.Factories.UnitFactory.prototype.UnitEnum=
+
+        this.Color=getRandomColor();
+        this.StackEmpty = true;
+
+    };
+
+    GlobalGame.Factories.UnitFactory.prototype.UnitEnum=//enum of units
     {
         Unit :
         {
@@ -48,7 +50,7 @@ module.exports = (function(GlobalGame,Utils) {
     };
     GlobalGame.Factories.UnitFactory.prototype.AddNewUnit= function(name)
     {
-
+        this.StackEmpty = false;
         var Enum = this.UnitEnum;
         for (var key in Enum) {
             if( Enum[key].Value.Name === name )
@@ -68,34 +70,20 @@ module.exports = (function(GlobalGame,Utils) {
         this.Targets=targets;
 
     };
-    GlobalGame.Factories.UnitFactory.prototype.SpawnUnit= function()
+    GlobalGame.Factories.UnitFactory.prototype.SpawnUnit= function(x,y)
     {
         var len = this.Units.length;
         var Unit =this.ListofNewUnits.pop();
 
-        New_unit = new Unit.Constructor(len,this.X,this.Y,this.getTargets(),Unit.Key);
+        New_unit = new Unit.Constructor(len,x,y,this.getTargets(),Unit.Key,this);
         this.Units.add(New_unit);
+        if (this.ListofNewUnits.length == 0 )
+        {
+            this.StackEmpty = true;
+        }
         //GlobalGame.game.add.existing(New_unit);
 
 
     };
-    GlobalGame.Factories.UnitFactory.prototype.SpawnWave= function()
-    {
-        if ((this.LastWaveTime.getTime() + this.CooldownWave) < (new Date()).getTime())
-        {
 
-            if (((this.LastUnitTime.getTime() + this.CooldownUnit) < (new Date()).getTime())&& (this.ListofNewUnits.length > 0))
-            {
-
-                    this.SpawnUnit();
-                    this.LastUnitTime=new Date();
-
-            }
-            if (this.ListofNewUnits.length === 0) {
-                this.LastWaveTime = new Date();
-            }
-
-        }
-
-    }
 });

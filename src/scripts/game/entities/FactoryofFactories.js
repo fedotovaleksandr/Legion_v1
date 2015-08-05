@@ -3,12 +3,15 @@
  */
 module.exports = (function(GlobalGame,Utils) {
     require('./UnitFactory')(GlobalGame,Utils);
+
+
     GlobalGame.FactoryofFactories= function()
     {
         this.ArrayofUnitFactories = [];
-
+        this.Portals = GlobalGame.game.add.group();
 
     }
+    GlobalGame.FactoryofFactories.constructor = GlobalGame.FactoryofFactories;
     GlobalGame.FactoryofFactories.prototype.SetOpponent= function(name1,name2)
     {
         var firstfabric={};
@@ -29,10 +32,20 @@ module.exports = (function(GlobalGame,Utils) {
         secondfabric.addTargets(firstfabric.Units)
 
     }
-    GlobalGame.FactoryofFactories.prototype.CreateUnitFactory= function(Name,x,y)
+    GlobalGame.FactoryofFactories.prototype.CreateGetUnitFactory= function(Name)
     {
         var len = this.ArrayofUnitFactories.length;
-        this.ArrayofUnitFactories.push(new GlobalGame.Factories.UnitFactory(len,Name,x,y));
+        var factory= new GlobalGame.Factories.UnitFactory(len,Name);
+        this.ArrayofUnitFactories.push(factory);
+        return factory;
+
+    }
+    GlobalGame.FactoryofFactories.prototype.CreatePortal= function(x,y,factory)
+    {
+        var len = this.Portals.length;
+        var factory= new GlobalGame.Prefabs.Portal(len,x,y,factory);
+        this.Portals.add(factory);
+
 
     }
     GlobalGame.FactoryofFactories.prototype.AddUnits= function()
@@ -40,7 +53,7 @@ module.exports = (function(GlobalGame,Utils) {
        var y_test=0;
        for (factory in this.ArrayofUnitFactories)
        {
-           for (var i =y_test ;i < 2 ;i++) {
+           for (var i =y_test ;i < 10 ;i++) {
                this.ArrayofUnitFactories[factory].AddNewUnit("Unit");
            }
            //y_test++;
@@ -52,7 +65,8 @@ module.exports = (function(GlobalGame,Utils) {
         var Array = this.ArrayofUnitFactories;
         for (factory in Array)
         {
-            Array[factory].SpawnWave();
+
+            GlobalGame.game.physics.arcade.collide( Array[factory].Units);//for physics
         }
 
     }

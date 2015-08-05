@@ -4,29 +4,32 @@
 module.exports = (function(GlobalGame,Utils) {
     //--------------------Unit-------------------------
     var game = GlobalGame.game;
-    GlobalGame.Prefabs.Unit = function (id, x, y, targets, key) {
+    GlobalGame.Prefabs.Unit = function (id, x, y, targets, key,factoryparent) {
         this.Id = id;//id maybe helpfull
+        this.FactoryParent =factoryparent;
         Phaser.Sprite.call(this, game, x, y, this.GetNameofSprite());//call sprite
 
         this.maxHp=100;
         //this.Hp={};//HP
         //this.watch("Hp",this.ChangeHp);//Event on change
         this.Hp=100;//HP
-
+        
 
         this.graphics2 = game.add.graphics(0, 0);//hp line
 
         this.State="idle";//state for animation
 
-        this.Mindistance = 50;//min distance for attack
+        this.Mindistance = 70;//min distance for attack
 
         this.Targets = targets;//targets
 
         this.CurrentTarget=undefined;//currenttarget
 
-        this.Speed = 1;//movented speed
+        this.Speed = 40;//movented speed
 
-        this.ReloadTime=500//ml sec - reload time
+        this.ReloadTime=500;//ml sec - reload time
+
+        this.DieTime= 500;
 
         this.LastAttackTime=new Date();
 
@@ -42,15 +45,23 @@ module.exports = (function(GlobalGame,Utils) {
 
         this.Vector= new Utils.Vector(0,0);//add vector
 
-
+        this.SetAnimation();
 
         this.anchor.setTo(0.5, 0.5);
         this.alpha = 0.8;//порядок по оси Z
         this.checkWorldBounds = true;
         this.outOfBoundsKill = true;
 
+        game.physics.enable(this, Phaser.Physics.ARCADE);
+        this.body.collideWorldBounds=true;
+        this.body.bounce.x= 1;
+        this.body.bounce.y= 1;
+        this.body.minBounceVelocity=0;
 
-        game.physics.arcade.enableBody(this);
+
+
+
+
 
         // Out of bounds callback
         this.events.onOutOfBounds.add(function(){
@@ -60,32 +71,57 @@ module.exports = (function(GlobalGame,Utils) {
     GlobalGame.Prefabs.Unit.prototype = Object.create(Phaser.Sprite.prototype);
     GlobalGame.Prefabs.Unit.constructor = GlobalGame.Prefabs.Unit;
     GlobalGame.Prefabs.Unit.prototype.update = function () {
-        this.UpdateUnitVector();
+        if (this.State!="die") {
+            this.UpdateUnitVector();
 
-        this.UpdateUnitPosition();
+            this.UpdateUnitPosition();
 
-        this.UpdatePropertyPosition();
-
-
+            this.UpdatePropertyPosition();
+        }
+        this.UpdateAnimation();
     };
-    //events
-    //GlobalGame.Prefabs.Unit.prototype.Events={}
+    GlobalGame.Prefabs.Unit.prototype.UpdateAnimation = function () {
+        if (this.State=="idle") {
 
+            this.animations.play(this.State, 0, true);//at speed to fps
+        }
+        if (this.State=="die") {
 
-    //events method
+            this.animations.play(this.State, (1000/this.DieTime)*this.AnimationData.CountFrames[this.State], true);//at speed to fps
+        }
+        if (this.State =="attack")//play animations need refactor
+        {
+            this.Attack();
+            this.animations.play(this.State, this.AnimationData.CountFrames[this.State]*(1000/this.ReloadTime), true);//at atackspeed to fps
+        }
+        if (this.State=="move")
+        {
+            this.animations.play(this.State, (this.Speed/100)*this.AnimationData.CountFrames[this.State], true);//at speed to fps
+
+        }
+        return;
+    };
     GlobalGame.Prefabs.Unit.prototype.GetNameofSprite = function()
     {
-        return 'soldier' ;
+        return 'soldier_sprite' ;
     };
     GlobalGame.Prefabs.Unit.prototype.SetAnimation = function()
     {
         this.AnimationData={};
         this.AnimationData.FrameHeight=160;
         this.AnimationData.FrameWidth=100;
-        this.animations.add('idle', [0, 1, 2]);
-        this.animations.add('attack', [0, 1, 2]);
-        this.animations.add('move', [0, 1, 2]);
-        this.animations.add('die', [0, 1, 2]);
+        this.AnimationData.CountFrames=
+        {
+            idle: 1 ,
+            attack: 6 ,
+            move: 6 ,
+            die: 3
+        };
+
+        this.animations.add('idle', [0]);
+        this.animations.add('attack', [1,2,3,4,5,6]);
+        this.animations.add('move', [9,10,11,12,13,14]);
+        this.animations.add('die', [15,16,17]);
     };
 
     GlobalGame.Prefabs.Unit.prototype.GetIncomeDamage = function(Hpalfa)
@@ -116,11 +152,11 @@ module.exports = (function(GlobalGame,Utils) {
             {
                 this.Vector.x=0;
                 this.Vector.y=0;
-                this.State="attack"
+                this.State="attack";
                 return;
             }
 
-            this.State="move"
+            this.State="move";
             var newvector = new Utils.Vector(this.CurrentTarget.X-this.X,this.CurrentTarget.Y-this.Y);
             var normvector= newvector.clone().normalize();
             normvector.x=normvector.x*this.Speed;
@@ -150,14 +186,11 @@ module.exports = (function(GlobalGame,Utils) {
 
     };
     GlobalGame.Prefabs.Unit.prototype.UpdateUnitPosition = function () {
-        this.body.x += this.Vector.x;
-        this.body.y +=  this.Vector.y;
+        this.body.velocity.x = this.Vector.x;
+        this.body.velocity.y =  this.Vector.y;
         this.X=this.body.x;
         this.Y=this.body.y;
-         if (this.State==="attack")
-         {
-             this.Attack();
-         }
+
 
 
     };
@@ -174,8 +207,8 @@ module.exports = (function(GlobalGame,Utils) {
         {
             this.graphics2.clear();
             this.graphics2.lineStyle(2, 0xffffff);
-            this.graphics2.beginFill(0xa000f3);
-            this.graphics2.drawRect(this.body.x, this.body.y - 10, 40 * this.Hp / this.maxHp, 5);
+            this.graphics2.beginFill(this.FactoryParent.Color);
+            this.graphics2.drawRect(this.X, this.Y - 10, 40 * this.Hp / this.maxHp, 5);
             this.graphics2.endFill();
         }
         else
@@ -190,10 +223,15 @@ module.exports = (function(GlobalGame,Utils) {
     GlobalGame.Prefabs.Unit.prototype.Die = function (autokill) {
 
             this.Dead = true;
-            this.alpha = 0;
-            this.State="die"
-            this.destroy(true);
+            //this.alpha = 0; push back front
+            this.State="die";
+        this.graphics2.clear();
+       var g_this=this;
+        setTimeout(function () {
 
+            g_this.graphics2.destroy(true);
+            g_this.destroy(true);
+             }, g_this.DieTime);
             // Explosion
             /*if(!autoKill){
                 this.explosion.reset(this.x, this.y);
