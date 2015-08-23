@@ -54,6 +54,7 @@ module.exports = (function(GlobalGame,Utils) {
        for (factory in this.ArrayofUnitFactories)
        {
            for (var i =y_test ;i < 10 ;i++) {
+               if (!("IsPlayerFactory" in this.ArrayofUnitFactories[factory]))
                this.ArrayofUnitFactories[factory].AddNewUnit("Unit");
            }
            //y_test++;

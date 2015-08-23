@@ -37,13 +37,16 @@ module.exports = (function(GlobalGame,Utils) {
             {
                 this.Name ="Unit" ;
                 this.Constructor = GlobalGame.Prefabs.Unit;
+                this.ConstructorBlock = GlobalGame.Prefabs.Unit;
                 this.Key = 1;
 
             },
             Value:
             {
                 Name: "Unit",
-                Key : 1
+                Key : 1,
+                SpriteName : 'soldier_sprite',
+                Cost: 10
             }
 
         }
@@ -58,6 +61,13 @@ module.exports = (function(GlobalGame,Utils) {
 
 
         }
+
+    };
+    GlobalGame.Factories.UnitFactory.prototype.SetItIsPlayerFactory= function(player)
+    {
+        this.PlayerName=player.Name;
+        this.Player=player;
+        this.IsPlayerFactory=true;
 
     };
     GlobalGame.Factories.UnitFactory.prototype.getTargets= function()

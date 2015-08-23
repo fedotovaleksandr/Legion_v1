@@ -67,13 +67,20 @@ module.exports = (function(GlobalGame) {
             //Factories#
             GlobalGame.FactoryofFactories=new GlobalGame.FactoryofFactories();
             GlobalGame.FactoryofFactories.CreatePortal(40,40,GlobalGame.FactoryofFactories.CreateGetUnitFactory("Player1"));
-            GlobalGame.FactoryofFactories.CreatePortal(400,400,GlobalGame.FactoryofFactories.CreateGetUnitFactory("Player2"));
+
+            GlobalGame.PlayerArea.Player = new GlobalGame.PlayerArea.Player("Player2",GlobalGame.FactoryofFactories.CreateGetUnitFactory("Player2"));
+
+            GlobalGame.PlayerArea.PlayerVision= new GlobalGame.PlayerArea.PlayerVision(GlobalGame.PlayerArea.Player);
 
             GlobalGame.FactoryofFactories.AddUnits();
             GlobalGame.FactoryofFactories.SetOpponent("Player1","Player2");
-        },
+
+           // var t = new GlobalGame.PlayerArea.UnitBlock("PlayerVision",400,400,"Name","Key" ,'soldier_sprite' ,10);
+
+            },
         update:function(){
             GlobalGame.FactoryofFactories.UpdateFactories();
+            GlobalGame.PlayerArea.PlayerVision.Update();
 
         }
 

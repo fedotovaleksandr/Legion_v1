@@ -6,6 +6,6 @@ module.exports = (function(GlobalGame) {
     Utils.Watcheventconfigurate();
 
     require('./FactoryofFactories.js')(GlobalGame,Utils);
-
+    require('./Player.js')(GlobalGame,Utils);
 
 });

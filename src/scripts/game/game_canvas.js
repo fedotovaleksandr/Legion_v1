@@ -1,5 +1,5 @@
 angular.module('app.game')
-    .directive('gameCanvas', function($window,$injector) {
+    .directive('gameCanvas', function($window,mySocket,$injector) {
         var linkFn = function(scope, ele, attrs) {
             var w = angular.element($window);
 
@@ -10,7 +10,8 @@ angular.module('app.game')
 
         return {
             scope: {
-
+				ngModel: '=',
+				mapId: '='
             },
             template: '<div id="game-canvas"></div>',
             compile: function(Ele, Attrs) {

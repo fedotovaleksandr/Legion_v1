@@ -14,7 +14,7 @@ module.exports = (function(GlobalGame,Utils) {
         //this.watch("Hp",this.ChangeHp);//Event on change
         this.Hp=100;//HP
         
-
+        this.Money = 5;
         this.graphics2 = game.add.graphics(0, 0);//hp line
 
         this.State="idle";//state for animation
@@ -124,12 +124,12 @@ module.exports = (function(GlobalGame,Utils) {
         this.animations.add('die', [15,16,17]);
     };
 
-    GlobalGame.Prefabs.Unit.prototype.GetIncomeDamage = function(Hpalfa)
+    GlobalGame.Prefabs.Unit.prototype.GetIncomeDamage = function(Hpalfa,enemy)
     {
         this.Hp-=Hpalfa;
         if (this.Hp <= 0)
         {
-            this.Die();
+            this.Die(enemy);
         }
     };
 
@@ -197,7 +197,7 @@ module.exports = (function(GlobalGame,Utils) {
     GlobalGame.Prefabs.Unit.prototype.Attack = function () {
     if (this.LastAttackTime.getTime() + this.ReloadTime < (new Date()).getTime())
     {
-        this.CurrentTarget.GetIncomeDamage(this.Damage);
+        this.CurrentTarget.GetIncomeDamage(this.Damage,this);
         this.LastAttackTime=new Date();
     }
 
@@ -220,8 +220,10 @@ module.exports = (function(GlobalGame,Utils) {
 
 
     };
-    GlobalGame.Prefabs.Unit.prototype.Die = function (autokill) {
-
+    GlobalGame.Prefabs.Unit.prototype.Die = function (enemy) {
+        if ("IsPlayerFactory" in enemy.FactoryParent) {
+        enemy.FactoryParent.Player.Money += this.Money;
+        }
             this.Dead = true;
             //this.alpha = 0; push back front
             this.State="die";
