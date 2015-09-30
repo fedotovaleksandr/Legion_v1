@@ -1,7 +1,7 @@
 // in /scripts/game/game_controller.js
 angular.module('app.game')
-    .controller('GameController', function() {
-        var network = require ('./states');
+    .controller('GameController', function($scope, $stateParams, mySocket) {
+
         var GlobalGame = require ('./states');
         require('./entities')(GlobalGame);
         GlobalGame.game.state.add('MainMenuState', GlobalGame.States.MainMenuState);

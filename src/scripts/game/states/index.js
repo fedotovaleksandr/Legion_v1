@@ -17,12 +17,12 @@ var GlobalGame={
     Factories:{},
     PlayerArea:{},
     BrowserWindow: {},
-    Network:{},
+
     game :  {}
     };
 require('./BrowserWindow')(GlobalGame);
 GlobalGame.Init();
-require('../../network')(GlobalGame);
+
 
 require('./menu_state')(GlobalGame);
 require('./play_state')(GlobalGame);

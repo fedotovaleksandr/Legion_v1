@@ -4,7 +4,13 @@ angular.module('app.game')
             var w = angular.element($window);
 
 
-
+    mySocket.then(function(sock) {
+      require('./main.js')(
+        ele, scope, sock, 
+        scope.ngModel, 
+        scope.mapId, 
+        $injector);
+    });
 
         };
 

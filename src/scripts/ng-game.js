@@ -1,10 +1,15 @@
 // In /scripts/ng-game.js
+
+
+
 angular.module('app', [
     'ui.router',
-    'app.menu',
-    'app.game'
+    require('./menu').name,
+    require('./game').name,
+    require('./network').name,
 ])
     .config(function($urlRouterProvider) {
         $urlRouterProvider
             .otherwise('/menu');
     })
+

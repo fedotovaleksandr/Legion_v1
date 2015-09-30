@@ -1,4 +1,5 @@
-angular.module('app.game', ['ui.router'])
+module.exports =
+    angular.module('app.game', ['ui.router'])
     .config(function($stateProvider) {
         $stateProvider
             .state('game', {
@@ -15,3 +16,4 @@ angular.module('app.game', ['ui.router'])
 
             })
     });
+require('./game_controller.js')

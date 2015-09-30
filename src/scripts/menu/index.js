@@ -1,4 +1,6 @@
-angular.module('app.menu', [
+
+module.exports =
+    angular.module('app.menu', [
     'app.menu.playButton'
 ])
     .config(function($stateProvider) {
@@ -16,3 +18,6 @@ angular.module('app.menu', [
             })
     })
 
+require('./play_button');
+
+require('./menu_controller.js')

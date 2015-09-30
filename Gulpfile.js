@@ -17,9 +17,10 @@ gulp.task('clean', function(){
 gulp.task('prebuild_copy_all', function() {
     console.log('prebuild_copy_all');
     return gulp.src(
-        [   'src/**/*',
+        [   'src/assets/**/*',
+            'src/images/**/*',
             //'node_modules/**/*',//addd if you wnat updATE NODE-MODULE
-
+            'src/scripts/**/*.html',
             '*.html'
         ], {base:"."})
         .pipe(gulp.dest('./build/'));
@@ -27,12 +28,12 @@ gulp.task('prebuild_copy_all', function() {
 
 gulp.task('browserify-game', function() {
     console.log('browserify-game start');
-    return browserify('./src/scripts/game/game_controller.js')
+    return browserify('./src/scripts/ng-game.js')
         .bundle()
-        .pipe(source('game_controller.js'))
+        .pipe(source('ng-game.js'))
         // Передаем имя файла, который получим на выходе, vinyl-source-stream
 
-        .pipe(gulp.dest('./build/src/scripts/game/'));
+        .pipe(gulp.dest('./build/src/scripts/'));
 });
 
 
